@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Reviews | Husn-e-Zulf</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+  <link rel="icon" type="image/png" href="2logo.jpg">
+
+  <style>
+    .header-line {
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .header-line.icons {
+      justify-content: space-between;
+      padding: 0 20px;
+    }
+    .nav-links {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+    }
+    .nav-links a {
+      text-decoration: none;
+      color: black;
+      position: relative;
+      padding-bottom: 5px;
+    }
+    .nav-links a.active::after,
+    .nav-links a:hover::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      height: 3px;
+      background-color: black;
+      width: 100%;
+      transition: width 0.3s ease;
+    }
+    .bi-person {
+      color: black;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="border-bottom">
+  <div class="header-line icons">
+    <div class="flex-grow-1 text-center">
+      <img src="logo.png" alt="Logo" style="height: 80px; width:170px; padding-top:10px;">
+    </div>
+    <div>
+      <a href="login.html"><i class="bi bi-person fs-4 me-3"></i></a>
+      <i class="bi bi-cart fs-4" data-bs-toggle="offcanvas" data-bs-target="#cartCanvas" role="button"></i>
+    </div>
+  </div>
+  <div class="header-line">
+    <nav class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="prod.html">Product</a>
+      <a href="reviews.html" class="active">Reviews</a>
+      <a href="contact.html">Contact Us</a>
+    </nav>
+  </div>
+</header>
+
+<!-- Offcanvas Cart -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="cartCanvas">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title">Your personal cart</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+  </div>
+  <div class="offcanvas-body">
+    <p>Your cart is currently empty. It feels lonely around here.</p>
+  </div>
+</div>
+
+<!-- Reviews Section -->
+<div class="container my-5">
+  <h3 class="mb-4">Customer Reviews</h3>
+  <div id="reviewCards"></div>
+</div>
+
+    <!-- Firebase SDKs and Initialization -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyBZ1u8jYgddYrkDZNbS361gdgykerzmXEg",
+    authDomain: "husn-e-zulff.firebaseapp.com",
+    projectId: "husn-e-zulff",
+    storageBucket: "husn-e-zulff.firebasestorage.app",
+    messagingSenderId: "110346704686",
+    appId: "1:110346704686:web:2cda45c84d237c910bccbf"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+</script>
+
+<!-- Load Reviews from Firestore -->
+<script>
+  function loadReviews() {
+    db.collection("reviews")
+      .where("show", "==", true)
+      .orderBy("timestamp", "desc")
+      .get()
+      .then(snapshot => {
+        snapshot.forEach(doc => {
+          const r = doc.data();
+          const stars = "★".repeat(r.rating) + "☆".repeat(5 - r.rating);
+          const reviewHTML = `
+            <div class="card mb-3">
+              <div class="card-body">
+                <h5>${r.name}</h5>
+                <div class="mb-2">${stars}</div>
+                <p>${r.comment}</p>
+              </div>
+            </div>`;
+          document.getElementById("reviewCards").innerHTML += reviewHTML;
+        });
+      });
+
+  }
+
+  window.onload = loadReviews;
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
